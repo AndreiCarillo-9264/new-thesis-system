@@ -1,0 +1,310 @@
+/* ==========================================================================
+   CPC Nexboard Login Page - Clean & Professional Version (Updated 2026)
+   ========================================================================== */
+
+:root {
+    --color-primary:       #A56B55;
+    --color-primary-dark:  #7A4F3F;
+    --color-primary-hover: #8F5E4A;
+    --color-bg:            #f8f9fa;
+    --color-card:          #ffffff;
+    --color-text:          #2d2d2d;
+    --color-text-light:    #5a5a5a;
+    --color-text-muted:    #8a8a8a;
+    --color-placeholder:   #a0a0a0;
+    --color-error:         #c53030;
+    --color-error-bg:      #fef2f2;
+
+    --font-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm:   0.875rem;
+    --font-size-xs:   0.75rem;
+    --font-size-lg:   1.75rem;
+
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+
+    --border-radius: 10px;
+    --shadow-sm: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.12);
+    --transition: all 0.22s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-base);
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* Main container - split screen */
+.login-container {
+    display: grid;
+    grid-template-columns: 58fr 42fr;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Hero / Background */
+.login-hero {
+    position: relative;
+    background: #1a1a1a;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 10% center;
+    opacity: 0.92;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.65) 100%);
+    z-index: 1;
+}
+
+.hero-text {
+    position: absolute;
+    bottom: 3.5rem;
+    left: 3.5rem;
+    right: 3.5rem;
+    z-index: 2;
+    color: white;
+    text-align: left;
+    text-shadow: 0 3px 12px rgba(0,0,0,0.75);
+}
+
+.hero-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+/* Form side */
+.login-form-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    padding: var(--space-lg);
+}
+
+.login-card {
+    background: var(--color-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.card-header {
+    margin-bottom: 2rem;
+}
+
+.logo {
+    width: 82px;
+    height: 82px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.system-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+/* Messages & Alerts */
+.messages-container {
+    margin-bottom: 1.5rem;
+}
+
+.status-message {
+    color: #166534;
+    font-weight: 500;
+}
+
+.alert {
+    padding: 0.85rem;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+    margin-bottom: 1rem;
+}
+
+.alert-error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border: 1px solid #fecaca;
+}
+
+/* Form */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+    color: var(--color-text);
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    font-size: var(--font-size-base);
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    background: #fdfdfd;
+    transition: var(--transition);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(165, 107, 85, 0.18);
+}
+
+input::placeholder {
+    color: var(--color-placeholder);
+}
+
+/* Password field with toggle */
+.password-group {
+    position: relative;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.3rem;
+}
+
+.password-toggle:hover {
+    color: var(--color-text);
+}
+
+/* Remember me */
+.remember-me-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0.6rem 0 1.2rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--color-primary);
+}
+
+/* Button */
+.btn-login {
+    width: 100%;
+    padding: 0.95rem;
+    background: var(--color-primary);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 0.5rem;
+}
+
+.btn-login:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Footer */
+.card-footer {
+    margin-top: 2.2rem;
+}
+
+.copyright {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .login-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 40vh 60vh;
+    }
+    
+    .login-hero { height: 40vh; }
+    
+    .hero-text {
+        bottom: 2rem;
+        left: 2rem;
+        right: 2rem;
+    }
+    
+    .hero-title { font-size: 2.2rem; }
+    .hero-subtitle { font-size: 1rem; }
+    
+    .login-form-side {
+        padding: var(--space-lg) var(--space-md);
+    }
+}
