@@ -19,8 +19,8 @@ use App\Http\Controllers\ActivityLogController;
 
 // Public welcome page (optional - can be removed if not needed)
 Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+    return view('auth/login');
+})->name('auth/login');
 
 // Authentication routes (login, logout, etc.)
 require __DIR__.'/auth.php';
