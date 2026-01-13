@@ -9,8 +9,6 @@ class InventoryTransfer extends Model
 {
     use HasFactory;
 
-    protected $table = 'inventory_transfers';
-
     protected $fillable = ['product_id', 'quantity', 'from_location', 'to_location', 'transfer_date'];
 
     public function product()

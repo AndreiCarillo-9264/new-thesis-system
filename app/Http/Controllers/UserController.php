@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\User;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    use AuthorizesRequests;
-
     public function __construct()
     {
         $this->authorizeResource(User::class, 'user');
@@ -21,22 +17,22 @@ class UserController extends Controller
     public function index()
     {
         $users = User::orderBy('name')->paginate(15);
-        return view('admin.users.index', compact('users'));
+        return view('users.index', compact('users'));
     }
 
     public function create()
     {
-        return view('admin.users.create');
+        return view('users.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'               => 'required|string|max:255',
-            'username'           => 'required|string|max:50|unique:users,username',
-            'email'              => 'required|email|unique:users,email',
-            'password'           => 'required|string|min:8|confirmed',
-            'department'         => 'required|in:admin,sales,production,inventory,logistics',
+            'name'          => 'required|string|max:255',
+            'username'      => 'required|string|max:50|unique:users,username',
+            'email'         => 'required|email|unique:users,email',
+            'password'      => 'required|string|min:8|confirmed',
+            'department'    => 'required|in:admin,sales,production,inventory,logistics',
             'profile_photo_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -48,15 +44,14 @@ class UserController extends Controller
             'department' => $validated['department'],
         ];
 
-        // Handle profile photo upload
+        // Handle profile photo (optional - using Laravel's default profile photo feature)
         if ($request->hasFile('profile_photo_path')) {
             $path = $request->file('profile_photo_path')->store('profile-photos', 'public');
-            $data['profile_photo_path'] = $path;
+            $data['profile_photo_path'] = '/storage/' . $path;
         }
 
         $user = User::create($data);
 
-        // Log the action
         ActivityLog::create([
             'user_id'   => auth()->id(),
             'action'    => 'created',
@@ -64,23 +59,24 @@ class UserController extends Controller
             'record_id' => $user->id,
         ]);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('users.index')
             ->with('success', 'User account created successfully.');
     }
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        // Prevent editing own department/role if paranoid, or allow
+        return view('users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name'               => 'required|string|max:255',
-            'username'           => 'required|string|max:50|unique:users,username,' . $user->id,
-            'email'              => 'required|email|unique:users,email,' . $user->id,
-            'department'         => 'required|in:admin,sales,production,inventory,logistics',
-            'password'           => 'nullable|string|min:8|confirmed',
+            'name'          => 'required|string|max:255',
+            'username'      => 'required|string|max:50|unique:users,username,' . $user->id,
+            'email'         => 'required|email|unique:users,email,' . $user->id,
+            'department'    => 'required|in:admin,sales,production,inventory,logistics',
+            'password'      => 'nullable|string|min:8|confirmed',
             'profile_photo_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -91,19 +87,13 @@ class UserController extends Controller
             'department' => $validated['department'],
         ];
 
-        if ($request->filled('password')) {
+        if (!empty($validated['password'])) {
             $data['password'] = Hash::make($validated['password']);
         }
 
-        // Handle profile photo update
         if ($request->hasFile('profile_photo_path')) {
-            // Optional: Delete old photo if exists
-            if ($user->profile_photo_path) {
-                Storage::disk('public')->delete($user->profile_photo_path);
-            }
-
             $path = $request->file('profile_photo_path')->store('profile-photos', 'public');
-            $data['profile_photo_path'] = $path;
+            $data['profile_photo_path'] = '/storage/' . $path;
         }
 
         $user->update($data);
@@ -115,19 +105,15 @@ class UserController extends Controller
             'record_id' => $user->id,
         ]);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('users.index')
             ->with('success', 'User updated successfully.');
     }
 
     public function destroy(User $user)
     {
+        // Prevent deleting yourself or the last admin (optional safety)
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
-        }
-
-        // Optional: Delete profile photo
-        if ($user->profile_photo_path) {
-            Storage::disk('public')->delete($user->profile_photo_path);
         }
 
         $user->delete();
@@ -139,7 +125,7 @@ class UserController extends Controller
             'record_id' => $user->id,
         ]);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('users.index')
             ->with('success', 'User account deleted.');
     }
 }

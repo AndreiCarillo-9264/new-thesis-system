@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\ActualInventory;
 use App\Models\Distribution;
 use App\Models\FinishedGood;
-use App\Models\InventoryTransfer;
 use App\Models\JobOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
