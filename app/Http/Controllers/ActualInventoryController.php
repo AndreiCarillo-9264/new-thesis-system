@@ -14,7 +14,7 @@ class ActualInventoryController extends Controller
 
     public function __construct()
     {
-        $this->authorizeResource(ActualInventory::class, 'inventory');
+        $this->authorizeResource(ActualInventory::class, 'actual_inventory');
     }
 
     public function index()
