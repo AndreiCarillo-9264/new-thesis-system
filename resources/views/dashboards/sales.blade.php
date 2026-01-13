@@ -67,7 +67,7 @@
             @endcan
         </div>
 
-        <!-- <div class="section-card-body">
+        <div class="section-card-body">
             <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
                 <div class="flex-grow-1" style="min-width: 240px;">
                     <div class="input-group">
@@ -75,23 +75,25 @@
                             <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-search.svg') }}" width="18" height="18" alt="Search">
                         </span>
                         <input type="text" id="search-input" class="form-control border-start-0"
-                               placeholder="Search by SO number, customer, or product..." aria-label="Search orders">
+                               placeholder="Search by JO number, product..." aria-label="Search job orders">
                     </div>
                 </div>
                 <div>
                     <select id="status-filter" class="form-select" style="min-width: 160px;">
                         <option value="">All Statuses</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status->name }}">{{ $status->name }}</option>
-                        @endforeach
+                        @if(isset($statuses))
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->name }}">{{ $status->name }}</option>
+                            @endforeach
+                        @endif
                     </select>
                 </div>
             </div>
-        </div> -->
+        </div>
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 admin-table">
+                <table id="orders-table" class="table table-hover mb-0 admin-table">
                     <thead>
                         <tr>
                             <th>JO Number</th>
@@ -503,242 +505,8 @@
         </div> -->
     @endif
 
-    <!-- <script>
-        // Helper: create new item row from template
-        function createItemRow() {
-            return document.getElementById('item-row-template').firstElementChild.cloneNode(true);
-        }
+@endsection
 
-        // Open New Order modal
-        document.getElementById('btn-new-order')?.addEventListener('click', () => {
-            document.getElementById('modal-new-order').classList.remove('d-none');
-        });
-
-        // Add item row (New modal)
-        document.querySelector('#modal-new-order #add-item')?.addEventListener('click', () => {
-            const container = document.querySelector('#modal-new-order #items-container');
-            const newRow = container.querySelector('.item-row').cloneNode(true);
-            newRow.querySelectorAll('input, select').forEach(el => el.value = '');
-            container.appendChild(newRow);
-        });
-
-        // Add item row (Edit modal)
-        document.querySelector('#modal-edit-order #add-item')?.addEventListener('click', () => {
-            const container = document.querySelector('#modal-edit-order #items-container');
-            container.appendChild(createItemRow());
-        });
-
-        // Remove item row
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-item')) {
-                const container = e.target.closest('#items-container');
-                const rows = container.querySelectorAll('.item-row');
-                if (rows.length > 1) {
-                    e.target.closest('.item-row').remove();
-                }
-            }
-        });
-
-        // Close modals
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.add('d-none');
-            });
-        });
-        document.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById(btn.dataset.closeModal).classList.add('d-none');
-            });
-        });
-
-        // Quick Add Customer
-        document.querySelectorAll('.btn-quick-add-customer').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('modal-quick-add-customer').classList.remove('d-none');
-            });
-        });
-
-        document.getElementById('quick-add-customer-form')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const data = new FormData(form);
-            data.append('_token', '{{ csrf_token() }}');
-
-            try {
-                const response = await fetch('{{ route("resources.customers.store") }}', {
-                    method: 'POST',
-                    body: data,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Server response:', errorText);
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const { id, text } = await response.json();
-
-                document.querySelectorAll('select[name="customer_id"]').forEach(select => {
-                    if ([...select.options].every(opt => opt.value !== id.toString())) {
-                        const option = new Option(text, id, true, true);
-                        select.add(option);
-                    }
-                });
-
-                document.getElementById('modal-quick-add-customer').classList.add('d-none');
-                form.reset();
-                alert('Customer added successfully!');
-            } catch (err) {
-                console.error('Quick add customer error:', err);
-                alert('Failed to add customer. Check browser console for details.');
-            }
-        });
-
-        // Quick Add Product
-        document.querySelectorAll('.btn-quick-add-product').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('modal-quick-add-product').classList.remove('d-none');
-            });
-        });
-
-        document.getElementById('quick-add-product-form')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const data = new FormData(form);
-            data.append('_token', '{{ csrf_token() }}');
-
-            try {
-                const response = await fetch('{{ route("resources.products.store") }}', {
-                    method: 'POST',
-                    body: data,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Server response:', errorText);
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const { id, text } = await response.json();
-
-                document.querySelectorAll('select[name="product_id[]"]').forEach(select => {
-                    if ([...select.options].every(opt => opt.value !== id.toString())) {
-                        const option = new Option(text, id);
-                        select.add(option);
-                    }
-                });
-
-                document.getElementById('modal-quick-add-product').classList.add('d-none');
-                form.reset();
-                alert('Product added successfully!');
-            } catch (err) {
-                console.error('Quick add product error:', err);
-                alert('Failed to add product. Check browser console for details.');
-            }
-        });
-
-        // View / Edit Order
-        document.querySelectorAll('[data-action]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const action = btn.dataset.action;
-                const id = btn.dataset.id;
-                const showUrl = '{{ route("sales.orders.show", ":id") }}'.replace(':id', id);
-
-                try {
-                    const response = await fetch(showUrl);
-                    if (!response.ok) throw new Error('Failed to load order');
-                    const order = await response.json();
-
-                    if (action === 'view') {
-                        document.getElementById('view-so_number').innerText = order.so_number;
-                        document.getElementById('view-order_date').innerText = new Date(order.order_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-                        document.getElementById('view-customer').innerText = order.customer.customer_name;
-                        document.getElementById('view-delivery_date').innerText = order.delivery_date ? new Date(order.delivery_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '-';
-                        document.getElementById('view-status').innerText = order.status.name;
-                        document.getElementById('view-remarks').innerText = order.remarks || '-';
-
-                        const tbody = document.querySelector('#view-items-table tbody');
-                        tbody.innerHTML = '';
-                        order.items.forEach(item => {
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${item.product.product_code} - ${item.product.product_name}</td>
-                                <td>${item.quantity}</td>
-                                <td>₱${parseFloat(item.unit_price).toFixed(2)}</td>
-                                <td>₱${parseFloat(item.subtotal).toFixed(2)}</td>
-                            `;
-                            tbody.appendChild(tr);
-                        });
-
-                        document.getElementById('modal-view-order').classList.remove('d-none');
-
-                    } else if (action === 'edit') {
-                        const modal = document.getElementById('modal-edit-order');
-                        const form = modal.querySelector('form');
-                        form.action = '{{ route("sales.orders.update", ":id") }}'.replace(':id', id);
-
-                        form.querySelector('[name="so_number"]').value = order.so_number;
-                        form.querySelector('[name="order_date"]').value = order.order_date;
-                        form.querySelector('[name="delivery_date"]').value = order.delivery_date || '';
-                        form.querySelector('[name="customer_id"]').value = order.customer_id;
-                        form.querySelector('[name="status_id"]').value = order.status_id;
-                        form.querySelector('[name="remarks"]').value = order.remarks || '';
-
-                        const container = form.querySelector('#items-container');
-                        container.innerHTML = '';
-                        if (order.items.length === 0) {
-                            container.appendChild(createItemRow());
-                        } else {
-                            order.items.forEach(item => {
-                                const row = createItemRow();
-                                row.querySelector('[name="product_id[]"]').value = item.product_id;
-                                row.querySelector('[name="quantity[]"]').value = item.quantity;
-                                row.querySelector('[name="unit_price[]"]').value = item.unit_price;
-                                container.appendChild(row);
-                            });
-                        }
-
-                        modal.classList.remove('d-none');
-                    }
-                } catch (err) {
-                    alert('Error loading order: ' + err.message);
-                }
-            });
-        });
-
-        // Generate Report
-        document.getElementById('btn-generate-report')?.addEventListener('click', () => {
-            window.location.href = '{{ route("sales.report") }}';
-        });
-
-        // Table search & filter
-        const searchInput = document.getElementById('search-input');
-        const statusFilter = document.getElementById('status-filter');
-        const rows = document.querySelectorAll('#orders-table tbody tr');
-
-        function filterTable() {
-            const search = (searchInput?.value || '').toLowerCase();
-            const status = statusFilter?.value || '';
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const rowStatus = row.querySelector('.badge')?.textContent.trim() || '';
-                const matchesSearch = text.includes(search);
-                const matchesStatus = !status || rowStatus === status;
-                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
-            });
-        }
-
-        searchInput?.addEventListener('input', filterTable);
-        statusFilter?.addEventListener('change', filterTable);
-    </script> -->
-
+@section('scripts')
+    <script src="{{ asset('assets/js/sales.js') }}"></script>
 @endsection

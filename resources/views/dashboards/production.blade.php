@@ -52,7 +52,7 @@
             @endcan
         </div>
 
-        <!-- <div class="section-card-body">
+        <div class="section-card-body">
             <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
                 <div class="flex-grow-1" style="min-width: 240px;">
                     <div class="input-group">
@@ -60,23 +60,25 @@
                             <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-search.svg') }}" width="18" height="18" alt="Search">
                         </span>
                         <input type="text" id="search-input" class="form-control border-start-0"
-                               placeholder="Search by SO number, customer, or product..." aria-label="Search orders">
+                               placeholder="Search by JO number, product..." aria-label="Search job orders">
                     </div>
                 </div>
                 <div>
                     <select id="status-filter" class="form-select" style="min-width: 160px;">
                         <option value="">All Statuses</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status->name }}">{{ $status->name }}</option>
-                        @endforeach
+                        @if(isset($statuses))
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->name }}">{{ $status->name }}</option>
+                            @endforeach
+                        @endif
                     </select>
                 </div>
             </div>
-        </div> -->
+        </div>
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 admin-table">
+                <table id="production-table" class="table table-hover mb-0 admin-table">
                     <thead>
                         <tr>
                             <th>JO Number</th>
@@ -162,7 +164,7 @@
         </div>
     @endcannot
 
-    @if($canEdit)
+    @can('create', App\Models\FinishedGood::class)
         <!-- Work Order Modal (Create/Edit) -->
         <!-- <div id="modal-work-order" class="modal-overlay d-none">
             <div class="modal-panel modal-panel-lg" role="dialog" aria-modal="true">
@@ -319,107 +321,10 @@
                 </div>
             </div>
         </div> -->
-    @endif
+    @endcan
 
-    <!-- <script>
-        // Open New Work Order
-        document.getElementById('btn-new-work-order')?.addEventListener('click', () => {
-            document.getElementById('modal-work-title').textContent = 'Create New Production Order';
-            document.getElementById('work-order-form').reset();
-            document.getElementById('work-order-id').value = '';
-            document.getElementById('modal-work-order').classList.remove('d-none');
-        });
+@endsection
 
-        // View / Edit / Output Buttons
-        document.querySelectorAll('.view-btn, .edit-btn, .output-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = btn.dataset.id;
-                const action = btn.classList.contains('view-btn') ? 'view' :
-                              btn.classList.contains('edit-btn') ? 'edit' : 'output';
-
-                const url = '{{ route("production.orders.show", ":id") }}'.replace(':id', id);
-                const response = await fetch(url);
-                const order = await response.json();
-
-                if (action === 'view') {
-                    document.getElementById('view-code').textContent = order.production_code;
-                    document.getElementById('view-dept').textContent = order.department;
-                    document.getElementById('view-so').textContent = order.salesOrder?.so_number || '-';
-                    document.getElementById('view-customer').textContent = order.salesOrder?.customer?.customer_name || '-';
-                    document.getElementById('view-start').textContent = order.start_date || '-';
-                    document.getElementById('view-end').textContent = order.end_date || '-';
-                    document.getElementById('view-status').textContent = order.status.name;
-                    document.getElementById('view-status').className = `badge bg-${order.status.name === 'Completed' ? 'success' : 'primary'}`;
-                    document.getElementById('view-progress').style.width = `${Math.min(order.progress_percentage, 100)}%`;
-                    document.getElementById('view-progress').textContent = `${Math.round(order.progress_percentage)}%`;
-                    document.getElementById('view-remarks').textContent = order.remarks || '-';
-
-                    document.getElementById('modal-view').classList.remove('d-none');
-
-                } else if (action === 'edit') {
-                    document.getElementById('modal-work-title').textContent = 'Edit Production Order';
-                    document.getElementById('work-order-id').value = order.id;
-                    document.getElementById('production_code').value = order.production_code;
-                    document.getElementById('department').value = order.department;
-                    document.getElementById('sales_order_id').value = order.sales_order_id;
-                    document.getElementById('start_date').value = order.start_date || '';
-                    document.getElementById('end_date').value = order.end_date || '';
-                    document.getElementById('status_id').value = order.status_id;
-                    document.getElementById('remarks').value = order.remarks || '';
-
-                    document.getElementById('modal-work-order').classList.remove('d-none');
-
-                } else if (action === 'output') {
-                    document.getElementById('output-production-id').value = order.id;
-                    document.getElementById('output-work-code').textContent = order.production_code;
-                    document.getElementById('output-product').textContent = 
-                        order.salesOrder?.items?.map(i => `${i.product.product_name} (${i.quantity})`).join(', ') || 'N/A';
-
-                    document.getElementById('modal-output').classList.remove('d-none');
-                }
-            });
-        });
-
-        // Close modals
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.add('d-none');
-            });
-        });
-        document.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById(btn.dataset.closeModal).classList.add('d-none');
-            });
-        });
-
-        // Table filtering
-        const searchInput = document.getElementById('search-input');
-        const statusFilter = document.getElementById('status-filter');
-        const deptFilter = document.getElementById('department-filter');
-        const rows = document.querySelectorAll('#production-table tbody tr');
-
-        function filterTable() {
-            const search = (searchInput?.value || '').toLowerCase();
-            const status = statusFilter?.value || '';
-            const dept = deptFilter?.value || '';
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const rowStatus = row.querySelector('.badge')?.textContent.trim() || '';
-                const rowDept = row.cells[3]?.textContent.trim() || '';
-
-                const matches = text.includes(search) &&
-                                (!status || rowStatus === status) &&
-                                (!dept || rowDept === dept);
-
-                row.style.display = matches ? '' : 'none';
-            });
-        }
-
-        searchInput?.addEventListener('input', filterTable);
-        statusFilter?.addEventListener('change', filterTable);
-        deptFilter?.addEventListener('change', filterTable);
-    </script> -->
-
-
+@section('scripts')
+    <script src="{{ asset('assets/js/production.js') }}"></script>
 @endsection

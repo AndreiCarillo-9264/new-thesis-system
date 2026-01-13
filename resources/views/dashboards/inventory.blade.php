@@ -208,7 +208,7 @@
                             <th>Reorder Level</th>
                             <th>Status</th>
                             <th>Last Movement</th>
-                            @if($canEdit)<th>Actions</th>@endif
+                            @can('update', App\Models\ActualInventory::class)<th>Actions</th>@endcan
                         </tr>
                     </thead>
                     <tbody>
@@ -230,7 +230,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $inventory->latestMovement?->movement_date->format('M d, Y') ?? '-' }}</td>
-                                @if($canEdit)
+                                @can('update', App\Models\ActualInventory::class)
                                     <td>
                                         <button class="btn btn-sm btn-outline-primary adjust-btn"
                                                 data-id="{{ $inventory->id }}"
@@ -239,11 +239,11 @@
                                             <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-edit-alt.svg') }}" width="16" height="16">
                                         </button>
                                     </td>
-                                @endif
+                                @endcan
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ $canEdit ? '9' : '8' }}" class="text-center text-muted py-5">
+                                <td colspan="@can('update', App\Models\ActualInventory::class)9@else8@endcan" class="text-center text-muted py-5">
                                     No inventory records found.
                                 </td>
                             </tr>
@@ -252,15 +252,15 @@
                 </table>
             </div>
 
-            @if(!$canEdit)
+            @cannot('update', App\Models\ActualInventory::class)
                 <div class="alert alert-info mt-4">
                     <small>ℹ️ You are viewing the Inventory dashboard in <strong>read-only</strong> mode. Only members of the Inventory department can record movements or adjust stock.</small>
                 </div>
-            @endif
+            @endcannot
         </div>
     </div>
 
-    @if($canEdit)
+    @can('update', App\Models\ActualInventory::class)
         <!-- Record Movement Modal -->
         <!-- <div id="modal-movement" class="modal-overlay d-none">
             <div class="modal-panel modal-panel-lg" role="dialog" aria-modal="true">
@@ -379,82 +379,10 @@
                 </div>
             </div>
         </div> -->
-    @endif
+    @endcan
 
-    <!-- <script>
-        // Open Record Movement Modal
-        document.getElementById('btn-new-movement')?.addEventListener('click', () => {
-            document.getElementById('modal-movement').classList.remove('d-none');
-            document.getElementById('movement-form').reset();
-            document.querySelector('#movement-form [name="movement_date"]').value = new Date().toISOString().split('T')[0];
-        });
+@endsection
 
-        // Open Adjust Stock Modal
-        document.querySelectorAll('.adjust-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.dataset.id;
-                const product = btn.dataset.product;
-                const stock = btn.dataset.stock;
-
-                document.getElementById('adjust-inventory-id').value = id;
-                document.getElementById('adjust-product-name').textContent = product;
-                document.getElementById('adjust-current-stock').textContent = stock;
-
-                document.getElementById('modal-adjust').classList.remove('d-none');
-            });
-        });
-
-        // Close modals
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.add('d-none');
-            });
-        });
-
-        document.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById(btn.dataset.closeModal).classList.add('d-none');
-            });
-        });
-
-        // Client-side table filtering
-        const searchInput = document.getElementById('search-input');
-        const warehouseFilter = document.getElementById('warehouse-filter');
-        const stockStatusFilter = document.getElementById('stock-status-filter');
-        const rows = document.querySelectorAll('#inventory-table tbody tr');
-
-        function filterTable() {
-            const search = (searchInput?.value || '').toLowerCase();
-            const warehouse = warehouseFilter?.value || '';
-            const status = stockStatusFilter?.value || '';
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const rowWarehouse = row.cells[3]?.textContent.trim() || 'Not Set';
-                const currentStock = parseInt(row.cells[4]?.textContent.replace(/,/g, '')) || 0;
-                const reorderLevel = parseInt(row.cells[5]?.textContent) || 0;
-
-                const isLow = currentStock <= reorderLevel && currentStock > 0;
-                const isZero = currentStock === 0;
-                const isNormal = currentStock > reorderLevel;
-
-                const matchesSearch = text.includes(search);
-                const matchesWarehouse = !warehouse || rowWarehouse === warehouse;
-                const matchesStatus = !status ||
-                    (status === 'low' && isLow) ||
-                    (status === 'normal' && isNormal) ||
-                    (status === 'zero' && isZero);
-
-                row.style.display = matchesSearch && matchesWarehouse && matchesStatus ? '' : 'none';
-            });
-        }
-
-        searchInput?.addEventListener('input', filterTable);
-        warehouseFilter?.addEventListener('change', filterTable);
-        stockStatusFilter?.addEventListener('change', filterTable);
-
-        // Initial filter
-        filterTable();
-    </script> -->
-
+@section('scripts')
+    <script src="{{ asset('assets/js/inventory.js') }}"></script>
 @endsection

@@ -52,7 +52,7 @@
             @endcan
         </div>
 
-        <!-- <div class="section-card-body">
+        <div class="section-card-body">
             <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
                 <div class="flex-grow-1" style="min-width: 240px;">
                     <div class="input-group">
@@ -60,23 +60,25 @@
                             <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-search.svg') }}" width="18" height="18" alt="Search">
                         </span>
                         <input type="text" id="search-input" class="form-control border-start-0"
-                               placeholder="Search by SO number, customer, or product..." aria-label="Search orders">
+                               placeholder="Search by JO number, product, or destination..." aria-label="Search distributions">
                     </div>
                 </div>
                 <div>
                     <select id="status-filter" class="form-select" style="min-width: 160px;">
                         <option value="">All Statuses</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status->name }}">{{ $status->name }}</option>
-                        @endforeach
+                        @if(isset($statuses))
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->name }}">{{ $status->name }}</option>
+                            @endforeach
+                        @endif
                     </select>
                 </div>
             </div>
-        </div> -->
+        </div>
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 admin-table">
+                <table id="deliveries-table" class="table table-hover mb-0 admin-table">
                     <thead>
                         <tr>
                             <th>JO Number</th>
@@ -278,133 +280,8 @@
         </div> -->
     @endif
 
-    <!-- <script>
-        // Open New Delivery
-        document.getElementById('btn-new-delivery')?.addEventListener('click', () => {
-            document.getElementById('modal-delivery-title').textContent = 'Schedule New Delivery';
-            document.getElementById('delivery-form').reset();
-            document.getElementById('delivery_id').value = '';
-            document.getElementById('items-tbody').innerHTML = '';
-            document.getElementById('modal-delivery').classList.remove('d-none');
-        });
+@endsection
 
-        // Load SO Items when selected — FIXED ROUTE GENERATION
-        document.getElementById('sales_order_id')?.addEventListener('change', async function () {
-            const soId = this.value;
-            const tbody = document.getElementById('items-tbody');
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center">Loading...</td></tr>';
-
-            if (!soId) {
-                tbody.innerHTML = '';
-                return;
-            }
-
-            try {
-                // Correct way to generate dynamic route with parameter
-                const url = '{{ route("logistics.so.items", ":id") }}'.replace(':id', soId);
-                const response = await fetch(url);
-
-                if (!response.ok) throw new Error('Failed to load items');
-
-                const items = await response.json();
-
-                tbody.innerHTML = '';
-                items.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.product.product_code} - ${item.product.product_name}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <input type="number" name="item_qty[${item.id}]" class="form-control form-control-sm"
-                                   min="0" max="${item.quantity}" value="${item.quantity}" required>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML = '<tr><td colspan="3" class="text-danger">Failed to load items</td></tr>';
-            }
-        });
-
-        // View / Edit Delivery — also using correct route pattern
-        document.querySelectorAll('.view-btn, .edit-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = btn.dataset.id;
-                const isEdit = btn.classList.contains('edit-btn');
-
-                const url = '{{ route("logistics.deliveries.show", ":id") }}'.replace(':id', id);
-                const response = await fetch(url);
-                const delivery = await response.json();
-
-                if (isEdit) {
-                    document.getElementById('modal-delivery-title').textContent = 'Edit Delivery';
-                    document.getElementById('delivery_id').value = delivery.id;
-                    document.getElementById('delivery_number').value = delivery.delivery_number;
-                    document.getElementById('delivery_date').value = delivery.delivery_date || '';
-                    document.getElementById('sales_order_id').value = delivery.sales_order_id;
-                    document.getElementById('driver').value = delivery.driver || '';
-                    document.getElementById('vehicle').value = delivery.vehicle || '';
-                    document.getElementById('status_id').value = delivery.status_id;
-
-                    // Trigger reload of items
-                    document.getElementById('sales_order_id').dispatchEvent(new Event('change'));
-
-                    document.getElementById('modal-delivery').classList.remove('d-none');
-                } else {
-                    document.getElementById('view-delivery-no').textContent = delivery.delivery_number;
-                    document.getElementById('view-so-no').textContent = delivery.salesOrder?.so_number || '-';
-                    document.getElementById('view-customer').textContent = delivery.salesOrder?.customer?.customer_name || '-';
-                    document.getElementById('view-date').textContent = delivery.delivery_date ? new Date(delivery.delivery_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : '-';
-                    document.getElementById('view-driver').textContent = delivery.driver || '-';
-                    document.getElementById('view-vehicle').textContent = delivery.vehicle || '-';
-                    document.getElementById('view-status').textContent = delivery.status.name;
-                    document.getElementById('view-status').className = `badge bg-${delivery.status.name === 'Completed' ? 'success' : (delivery.status.name === 'In Transit' ? 'warning' : 'secondary')}`;
-
-                    const viewTbody = document.getElementById('view-items-tbody');
-                    viewTbody.innerHTML = '';
-                    delivery.items.forEach(item => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${item.product.product_code} - ${item.product.product_name}</td><td>${item.quantity}</td>`;
-                        viewTbody.appendChild(tr);
-                    });
-
-                    document.getElementById('modal-view-delivery').classList.remove('d-none');
-                }
-            });
-        });
-
-        // Close modals
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.add('d-none');
-            });
-        });
-        document.querySelectorAll('[data-close-modal]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById(btn.dataset.closeModal).classList.add('d-none');
-            });
-        });
-
-        // Table filtering
-        const searchInput = document.getElementById('search-input');
-        const statusFilter = document.getElementById('status-filter');
-        const rows = document.querySelectorAll('#deliveries-table tbody tr');
-
-        function filterTable() {
-            const search = (searchInput?.value || '').toLowerCase();
-            const status = statusFilter?.value || '';
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const rowStatus = row.querySelector('.badge')?.textContent.trim() || '';
-
-                row.style.display = (text.includes(search) && (!status || rowStatus === status)) ? '' : 'none';
-            });
-        }
-
-        searchInput?.addEventListener('input', filterTable);
-        statusFilter?.addEventListener('change', filterTable);
-    </script> -->
-
+@section('scripts')
+    <script src="{{ asset('assets/js/logistics.js') }}"></script>
 @endsection
