@@ -44,6 +44,21 @@
                 <h5 class="mb-0 fw-semibold">Recent Job Orders</h5>
                 <small class="text-muted">Latest created/updated job orders</small>
             </div>
+
+            <!-- @if($canEdit)
+                <div class="d-flex align-items-center gap-2">
+                    <button id="btn-generate-report" class="btn btn-outline-secondary d-flex align-items-center gap-2 px-3">
+                        <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-file.svg') }}" width="18" height="18" alt="Report">
+                        Generate Report
+                    </button>
+                    <button id="btn-new-order" class="btn btn-primary d-flex align-items-center gap-2 px-3"
+                            style="background-color: var(--color-primary); border-color: var(--color-primary);">
+                        <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-plus.svg') }}" width="18" height="18" alt="New Order">
+                        New Order
+                    </button>
+                </div>
+            @endif -->
+
             @can('create', App\Models\JobOrder::class)
                 <a href="{{ route('job_orders.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
                     <img src="{{ asset('assets/icons/add.svg') }}" width="16" height="16" alt="">
@@ -51,6 +66,29 @@
                 </a>
             @endcan
         </div>
+
+        <!-- <div class="section-card-body">
+            <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
+                <div class="flex-grow-1" style="min-width: 240px;">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-search.svg') }}" width="18" height="18" alt="Search">
+                        </span>
+                        <input type="text" id="search-input" class="form-control border-start-0"
+                               placeholder="Search by SO number, customer, or product..." aria-label="Search orders">
+                    </div>
+                </div>
+                <div>
+                    <select id="status-filter" class="form-select" style="min-width: 160px;">
+                        <option value="">All Statuses</option>
+                        @foreach($statuses as $status)
+                            <option value="{{ $status->name }}">{{ $status->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div> -->
+
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 admin-table">

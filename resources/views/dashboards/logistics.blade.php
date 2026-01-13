@@ -51,6 +51,29 @@
                 </a>
             @endcan
         </div>
+
+        <!-- <div class="section-card-body">
+            <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
+                <div class="flex-grow-1" style="min-width: 240px;">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <img src="{{ asset('assets/vendor/boxicons/svg/basic/bx-search.svg') }}" width="18" height="18" alt="Search">
+                        </span>
+                        <input type="text" id="search-input" class="form-control border-start-0"
+                               placeholder="Search by SO number, customer, or product..." aria-label="Search orders">
+                    </div>
+                </div>
+                <div>
+                    <select id="status-filter" class="form-select" style="min-width: 160px;">
+                        <option value="">All Statuses</option>
+                        @foreach($statuses as $status)
+                            <option value="{{ $status->name }}">{{ $status->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div> -->
+
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 admin-table">
