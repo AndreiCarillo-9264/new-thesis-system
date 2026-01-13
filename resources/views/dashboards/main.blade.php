@@ -139,57 +139,75 @@
 @endsection
 
 @section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Comparison Chart
-    new Chart(document.getElementById('comparisonChart'), {
-        type: 'bar',
-        data: {
-            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-            datasets: [
-                { label: 'Ordered',     data: [1200,1900,3000,2500,2800,3200,4000,3800,3500,3000,2700,2400], backgroundColor: 'rgba(165,107,85,0.65)', borderColor: '#A56B55', borderWidth: 1 },
-                { label: 'Produced',    data: [1100,1700,2800,2300,2600,3000,3700,3500,3200,2800,2500,2100], backgroundColor: 'rgba(99,54,39,0.65)',   borderColor: '#633627', borderWidth: 1 },
-                { label: 'Distributed', data: [ 900,1400,2400,2000,2200,2600,3200,3000,2700,2400,2100,1800], backgroundColor: 'rgba(217,184,169,0.65)', borderColor: '#D9B8A9', borderWidth: 1 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#e9ecef' } }
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Comparison Chart
+        new Chart(document.getElementById('comparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                datasets: [
+                    {
+                        label: 'Ordered',
+                        data: [],
+                        backgroundColor: 'rgba(165,107,85,0.65)',
+                        borderColor: '#A56B55',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Produced',
+                        data: [],
+                        backgroundColor: 'rgba(99,54,39,0.65)',
+                        borderColor: '#633627',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Distributed',
+                        data: [],
+                        backgroundColor: 'rgba(217,184,169,0.65)',
+                        borderColor: '#D9B8A9',
+                        borderWidth: 1
+                    }
+                ]
             },
-            plugins: {
-                legend: { position: 'top' }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#e9ecef' } }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
             }
-        }
-    });
+        });
 
-    // Inventory Trend
-    new Chart(document.getElementById('inventoryTrendChart'), {
-        type: 'line',
-        data: {
-            labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-            datasets: [{
-                label: 'Inventory Level',
-                data: [8500,8200,7800,7600,7400,7100,6900,7200,7500,7800,8100,7900],
-                borderColor: 'var(--color-primary)',
-                backgroundColor: 'rgba(165,107,85,0.12)',
-                tension: 0.3,
-                fill: true,
-                pointBackgroundColor: 'var(--color-primary)',
-                pointBorderColor: '#fff',
-                pointHoverRadius: 6,
-                pointRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: false, grid: { color: '#e9ecef' } }
+        // Inventory Trend Chart
+        new Chart(document.getElementById('inventoryTrendChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                datasets: [{
+                    label: 'Inventory Level',
+                    data: [],
+                    borderColor: 'var(--color-primary)',
+                    backgroundColor: 'rgba(165,107,85,0.12)',
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: 'var(--color-primary)',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: false, grid: { color: '#e9ecef' } }
+                }
             }
-        }
+        });
     });
-});
-</script>
+    </script>
 @endsection

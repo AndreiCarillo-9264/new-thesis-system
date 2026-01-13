@@ -14,7 +14,7 @@ class JobOrderPolicy
 
     public function create(User $user): bool
     {
-        return $user->department === 'sales';  // Only Sales create
+        return $user->department === 'sales';
     }
 
     public function update(User $user, JobOrder $jobOrder): bool

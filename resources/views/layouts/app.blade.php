@@ -8,7 +8,7 @@
     <title>CPC Nexboard - @yield('title', 'Dashboard')</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
 
     <!-- Chart.js -->
@@ -19,54 +19,54 @@
     <!-- Fixed Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <img src="{{ asset('assets/images/system-logo.webp') }}" 
-                 alt="CPC Logo" 
+            <img src="{{ asset('assets/images/system-logo.webp') }}"
+                 alt="CPC Logo"
                  class="system-logo">
             <h1 class="system-name">CPC Nexboard</h1>
         </div>
 
         <nav class="sidebar-nav flex-grow-1">
             <!-- Main Navigation -->
-            <a href="{{ route('dashboard.main') }}" 
+            <a href="{{ route('dashboard.main') }}"
                class="nav-link {{ request()->routeIs('dashboard.main') ? 'active' : '' }}">
                 <img src="{{ asset('assets/icons/dashboard.svg') }}" width="24" height="24" alt="">
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{ route('dashboard.sales') }}" 
+            <a href="{{ route('dashboard.sales') }}"
                class="nav-link {{ request()->routeIs('dashboard.sales') ? 'active' : '' }}">
                 <img src="{{ asset('assets/icons/sales.svg') }}" width="24" height="24" alt="">
                 <span>Sales</span>
             </a>
 
-            <a href="{{ route('dashboard.production') }}" 
+            <a href="{{ route('dashboard.production') }}"
                class="nav-link {{ request()->routeIs('dashboard.production') ? 'active' : '' }}">
                 <img src="{{ asset('assets/icons/production.svg') }}" width="24" height="24" alt="">
                 <span>Production</span>
             </a>
 
-            <a href="{{ route('dashboard.inventory') }}" 
+            <a href="{{ route('dashboard.inventory') }}"
                class="nav-link {{ request()->routeIs('dashboard.inventory') ? 'active' : '' }}">
                 <img src="{{ asset('assets/icons/inventory.svg') }}" width="24" height="24" alt="">
                 <span>Inventory</span>
             </a>
 
-            <a href="{{ route('dashboard.logistics') }}" 
+            <a href="{{ route('dashboard.logistics') }}"
                class="nav-link {{ request()->routeIs('dashboard.logistics') ? 'active' : '' }}">
                 <img src="{{ asset('assets/icons/logistics.svg') }}" width="24" height="24" alt="">
                 <span>Logistics</span>
             </a>
 
-            @if (strtolower(auth()->user()->department ?? '') === 'admin')
+            @if (strtolower(auth()->user()?->department ?? '') === 'admin')
                 <hr class="my-3">
 
-                <a href="{{ route('admin.users.index') }}" 
+                <a href="{{ route('admin.users.index') }}"
                    class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <img src="{{ asset('assets/icons/user-management.svg') }}" width="24" height="24" alt="">
                     <span>Users</span>
                 </a>
 
-                <a href="{{ route('admin.activity-logs.index') }}" 
+                <a href="{{ route('admin.activity-logs.index') }}"
                    class="nav-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">
                     <img src="{{ asset('assets/icons/activity-log.svg') }}" width="24" height="24" alt="">
                     <span>Activity Log</span>
@@ -99,7 +99,7 @@
         <!-- Top Navbar -->
         <nav class="navbar fixed-top">
             <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
-                <!-- LEFT: Page Icon + Title + Subtitle -->
+                <!-- Page Header -->
                 <div class="navbar-page-header d-flex align-items-center gap-3">
                     @yield('page-icon')
                     <div class="d-flex flex-column justify-content-center">
@@ -108,30 +108,23 @@
                     </div>
                 </div>
 
-                <!-- RIGHT SIDE: Bell + (Name + Email below) + Profile Picture -->
-                <div class="d-flex align-items-center gap-4">
-                    <!-- Bell + Name/Email (mirroring left side pattern) -->
-                    <div class="d-flex align-items-center gap-3">
-                        <!-- Bell icon -->
-                        <img src="{{ asset('assets/icons/notification.svg') }}" width="28" height="28" alt="Notifications">
+                <!-- Right Side -->
+                <div class="navbar-right d-flex align-items-center gap-3">
+                    <img src="{{ asset('assets/icons/notification.svg') }}" width="28" height="28" alt="Notifications">
 
-                        <!-- Stacked Name + Email (like title + subtitle) -->
-                        <div class="d-flex flex-column justify-content-center">
-                            <span class="fw-medium">{{ auth()->user()->name }}</span>
-                            <small class="text-muted">{{ auth()->user()->email }}</small>
-                        </div>
-
-                        <!-- Profile Picture (standalone, aligned center) -->
-                        @if (auth()->user()->profile_photo_path)
-                            <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}"
-                                alt="{{ auth()->user()->name }}"
-                                class="rounded-circle"
-                                width="42" height="42"
-                                style="object-fit: cover; border: 2px solid var(--color-border);">
-                        @else
-                            <img src="{{ asset('assets/icons/user.svg') }}" width="42" height="42" alt="Profile" class="rounded-circle">
-                        @endif
+                    <div class="user-info d-flex flex-column justify-content-center">
+                        <span class="fw-medium">{{ auth()->user()->name }}</span>
+                        <small class="text-muted">{{ auth()->user()->email }}</small>
                     </div>
+
+                    @if (auth()->user()->profile_photo_path)
+                        <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}"
+                             alt="{{ auth()->user()->name }}"
+                             class="rounded-circle profile-picture">
+                    @else
+                        <img src="{{ asset('assets/icons/user.svg') }}" width="42" height="42" alt="Profile"
+                             class="rounded-circle profile-picture">
+                    @endif
                 </div>
             </div>
         </nav>

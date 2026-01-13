@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActivityLogController;
-// use App\Http\Controllers\ProfileController; // Uncomment if you have this controller
+use App\Http\Controllers\JobOrderController;
+use App\Http\Controllers\FinishedGoodController;
+use App\Http\Controllers\DistributionController;
+use App\Http\Controllers\ActualInventoryController;
+use App\Http\Controllers\InventoryTransferController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,62 +22,96 @@ use App\Http\Controllers\ActivityLogController;
 |
 */
 
-// Public welcome page (optional - can be removed if not needed)
+// Redirect root to login
 Route::get('/', function () {
-    return view('auth/login');
-})->name('auth/login');
+    return redirect()->route('login');
+})->name('welcome');
 
-// Authentication routes (login, logout, etc.)
+// Authentication routes (login/logout from Breeze)
 require __DIR__.'/auth.php';
 
-// Protected routes - all require authentication
+// All routes below require authentication
 Route::middleware('auth')->group(function () {
 
-    // ==============================================
-    // Main Dashboard (View-Only - accessible to all)
-    // ==============================================
+    // =============================================================
+    // Main Dashboard – Viewable by ALL authenticated users
+    // =============================================================
     Route::get('/dashboard', [DashboardController::class, 'main'])
         ->name('dashboard.main');
 
-    // ==============================================
+    // =============================================================
     // Department-specific Dashboards
-    // These are the post-login landing pages based on user department
-    // ==============================================
-    Route::prefix('dashboard')->group(function () {
-        Route::get('sales', [DashboardController::class, 'sales'])
-            ->name('dashboard.sales');
-
-        Route::get('production', [DashboardController::class, 'production'])
-            ->name('dashboard.production');
-
-        Route::get('inventory', [DashboardController::class, 'inventory'])
-            ->name('dashboard.inventory');
-
-        Route::get('logistics', [DashboardController::class, 'logistics'])
-            ->name('dashboard.logistics');
+    // All can VIEW, but only department + admin can EDIT (via policies)
+    // =============================================================
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('sales',      [DashboardController::class, 'sales'])     ->name('sales');
+        Route::get('production', [DashboardController::class, 'production'])->name('production');
+        Route::get('inventory',  [DashboardController::class, 'inventory']) ->name('inventory');
+        Route::get('logistics',  [DashboardController::class, 'logistics']) ->name('logistics');
     });
 
-    // ==============================================
-    // Admin-only Routes
-    // ==============================================
-    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        // User Management (full CRUD ready for future expansion)
-        Route::resource('users', UserController::class)
-            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    // =============================================================
+    // Products (mostly managed by Inventory/Admin)
+    // =============================================================
+    Route::resource('products', ProductController::class)
+        ->names('products');
 
-        // Activity Logs (view-only for now)
+    // =============================================================
+    // Job Orders – mainly Sales department
+    // =============================================================
+    Route::resource('job-orders', JobOrderController::class)
+        ->names('job_orders');
+
+    // =============================================================
+    // Finished Goods – mainly Production department
+    // =============================================================
+    Route::resource('finished-goods', FinishedGoodController::class)
+        ->names('finished_goods')
+        ->parameters(['finished-goods' => 'finished_good']);
+
+    // =============================================================
+    // Distributions – Sales + Logistics
+    // =============================================================
+    Route::resource('distributions', DistributionController::class)
+        ->names('distributions');
+
+    // =============================================================
+    // Actual Inventory – mainly Inventory department
+    // Usually only index/show/edit/update (no mass create/destroy)
+    // =============================================================
+    Route::resource('actual-inventories', ActualInventoryController::class)
+        ->names('actual_inventories')
+        ->parameters(['actual-inventories' => 'actual_inventory'])
+        ->only(['index', 'show', 'edit', 'update']);
+
+    // =============================================================
+    // Inventory Transfers – mainly Logistics / Inventory
+    // =============================================================
+    Route::resource('inventory-transfers', InventoryTransferController::class)
+        ->names('inventory_transfers')
+        ->parameters(['inventory-transfers' => 'inventory_transfer']);
+
+    // =============================================================
+    // Admin-only section (protected by 'admin' middleware)
+    // =============================================================
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+
+        // User Management
+        Route::resource('users', UserController::class)
+            ->names('users');
+
+        // Activity Logs
         Route::get('activity-logs', [ActivityLogController::class, 'index'])
             ->name('activity-logs.index');
 
-        // You can easily add more admin sections later, e.g.:
-        // Route::resource('products', ProductController::class);
-        // Route::get('settings', [SettingsController::class, 'index'])->name('settings');
+        // Optional: Admin full access overrides (uncomment if needed)
+        // Route::resource('job-orders', JobOrderController::class)->names('admin.job_orders');
+        // Route::resource('products', ProductController::class)->names('admin.products');
     });
 
-    // ==============================================
-    // User Profile Routes (optional - if you want to keep them)
-    // ==============================================
+    // =============================================================
+    // Optional: User Profile (enable when you want to allow photo/name edit)
+    // =============================================================
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

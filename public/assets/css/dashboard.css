@@ -1,18 +1,20 @@
 /* ==========================================
-   CPC Nexboard – Dashboard CSS (Right Navbar Final Fix)
+   CPC Nexboard – Dashboard Styles
+   Last updated: January 2026
    ========================================== */
 
 :root {
-  /* ─────── Typography ─────── */
-  --font-size-xs:    0.75rem;     /* 12px */
-  --font-size-sm:    0.875rem;    /* 14px */
-  --font-size-base:  1rem;        /* 16px */
-  --font-size-md:    1.125rem;    /* 18px */
-  --font-size-lg:    1.375rem;    /* 22px */
-  --font-size-xl:    1.75rem;     /* 28px */
-  --font-size-2xl:   2.125rem;    /* 34px */
+  /* Typography */
+  --font-size-xs:    0.75rem;
+  --font-size-sm:    0.875rem;
+  --font-size-base:  1rem;
+  --font-size-md:    1.125rem;
+  --font-size-lg:    1.375rem;
+  --font-size-xl:    1.75rem;
+  --font-size-2xl:   2.125rem;
+  --font-size-3xl:   2.5rem;
 
-  /* ─────── Spacing ─────── */
+  /* Spacing */
   --space-3xs: 0.25rem;
   --space-2xs: 0.5rem;
   --space-xs:  0.75rem;
@@ -21,7 +23,7 @@
   --space-lg:  2.25rem;
   --space-xl:  3.5rem;
 
-  /* ─────── Colors ─────── */
+  /* Colors */
   --color-primary:       #A56B55;
   --color-primary-dark:  #633627;
   --color-primary-light: #D9B8A9;
@@ -33,11 +35,11 @@
   --color-border:        #cccccc;
   --color-hr:            #aaaaaa;
 
-  /* ─────── Effects ─────── */
+  /* Effects */
   --radius-sm:   8px;
   --radius-md:   12px;
   --shadow-sm:   0 2px 8px rgba(0,0,0,0.08);
-  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.12);
   --transition:  all 0.25s ease;
 }
 
@@ -58,7 +60,7 @@ body {
   min-height: 100vh;
 }
 
-/* ─────── Layout Basics ─────── */
+/* ───── Layout ───── */
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
@@ -89,10 +91,10 @@ body {
 
 .content-wrapper {
   margin-top: var(--space-xl);
-  padding: var(--space-lg) 0;
+  padding: var(--space-lg) 0 var(--space-xl);
 }
 
-/* ─────── Sidebar ─────── */
+/* ───── Sidebar ───── */
 .sidebar-header {
   height: 70px;
   background: var(--color-white);
@@ -146,7 +148,8 @@ body {
   flex-shrink: 0;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link:focus {
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
 }
@@ -165,7 +168,6 @@ body {
   filter: brightness(0) invert(1);
 }
 
-/* Compact separator */
 .sidebar hr {
   margin: 1rem var(--space-lg);
   border: none;
@@ -174,7 +176,7 @@ body {
   opacity: 0.6;
 }
 
-/* ─────── Top Navbar ─────── */
+/* ───── Navbar ───── */
 .navbar .container-fluid {
   height: 100%;
   padding: 0 1.75rem;
@@ -183,17 +185,17 @@ body {
   justify-content: space-between;
 }
 
-/* LEFT: Page Icon + Title + Subtitle */
 .navbar-page-header {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.navbar-page-header > *:first-child {  /* the icon */
+.navbar-page-header > *:first-child {
   width: 34px;
   height: 34px;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .navbar-page-header div {
@@ -217,70 +219,71 @@ body {
   line-height: 1.3;
 }
 
-/* RIGHT: Notification Bell → Name + Email → Profile Picture */
 .navbar-right {
-  display: flex;  
-  align-items: center;
-  gap: 2.5rem;  /* balanced space between bell and profile group */
-}
-
-/* Profile Group: Name/Email + Picture */
-.navbar-profile-group {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.75rem;
 }
 
-.navbar-profile-text {
+.navbar-right > *:first-child {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.navbar-right .user-info {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   line-height: 1.2;
 }
 
-.navbar-profile-text span {
+.navbar-right .user-info span {
   font-weight: 500;
   font-size: var(--font-size-md);
   color: var(--color-text);
+  white-space: nowrap;
 }
 
-.navbar-profile-text small {
+.navbar-right .user-info small {
   font-size: 0.8125rem;
   color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
-.navbar-profile-picture img {
-  width: 40px;
-  height: 40px;
+.profile-picture img {
+  width: 42px;
+  height: 42px;
   object-fit: cover;
   border: 2px solid var(--color-border);
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-/* ─────── Cards ─────── */
-.stats-card,
-.card {
+/* ───── Cards & KPI ───── */
+.card,
+.stats-card {
   background: var(--color-white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  transition: var(--transition);
 }
 
 .stats-card {
-  position: relative;
-  padding: 1.5rem;
+  padding: 1.25rem 1.125rem;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: center;
-  height: 100%;
+  border-left: 5px solid var(--color-primary);
 }
 
-.stats-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 6px;
-  background: var(--color-primary);
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 
 .stats-card h5 {
@@ -296,6 +299,7 @@ body {
   font-weight: 700;
   color: var(--color-primary);
   margin: 0;
+  line-height: 1.1;
 }
 
 .card-header {
@@ -304,7 +308,7 @@ body {
   padding: 1rem 1.5rem;
 }
 
-/* ─────── Tables ─────── */
+/* ───── Tables ───── */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -342,15 +346,25 @@ body {
   border-bottom: none;
 }
 
-/* ─────── Utilities ─────── */
-.text-primary       { color: var(--color-primary) !important; }
-.text-muted         { color: var(--color-text-muted) !important; }
-.fw-medium          { font-weight: 500; }
-.rounded-pill       { border-radius: 50rem; }
-.shadow-sm          { box-shadow: var(--shadow-sm); }
-.shadow-md          { box-shadow: var(--shadow-md); }
+/* ───── Responsive ───── */
+@media (min-width: 1200px) {
+  .stats-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .stats-card h2 {
+    font-size: var(--font-size-3xl);
+  }
+}
 
-/* ─────── Responsive ─────── */
+@media (max-width: 991px) {
+  .stats-card {
+    min-height: 110px;
+  }
+  .stats-card h2 {
+    font-size: var(--font-size-xl);
+  }
+}
+
 @media (max-width: 1400px) {
   .sidebar { width: 240px; }
   .navbar,
@@ -381,13 +395,18 @@ body {
     font-size: 1.5rem;
   }
   .navbar-right {
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
-  .navbar-profile-group {
-    gap: 0.8rem;
-  }
-  .navbar-profile-picture img {
+  .profile-picture img {
     width: 36px;
     height: 36px;
   }
 }
+
+/* ───── Utilities ───── */
+.text-primary       { color: var(--color-primary) !important; }
+.text-muted         { color: var(--color-text-muted) !important; }
+.fw-medium          { font-weight: 500; }
+.rounded-pill       { border-radius: 50rem; }
+.shadow-sm          { box-shadow: var(--shadow-sm); }
+.shadow-md          { box-shadow: var(--shadow-md); }

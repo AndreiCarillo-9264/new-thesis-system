@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\ActualInventory;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ActualInventoryPolicy
 {
@@ -18,7 +17,7 @@ class ActualInventoryPolicy
         return $user->department === 'inventory';
     }
 
-    public function update(User $user, ActualInventory $actualInventory): bool
+    public function update(User $user): bool
     {
         return $user->department === 'inventory';
     }
