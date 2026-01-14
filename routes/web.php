@@ -41,10 +41,15 @@ Route::middleware('auth')->group(function () {
 
     // =============================================================
     // Department-specific Dashboards
-    // All can VIEW, but only department + admin can EDIT (via policies)
+    // All can VIEW, edit permissions handled by policies
     // =============================================================
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('sales',      [DashboardController::class, 'sales'])     ->name('sales');
+        
+        // NEW: Sales Report (accessible from Sales Dashboard)
+        Route::get('sales/report', [DashboardController::class, 'salesReport'])
+            ->name('sales.report');
+
         Route::get('production', [DashboardController::class, 'production'])->name('production');
         Route::get('inventory',  [DashboardController::class, 'inventory']) ->name('inventory');
         Route::get('logistics',  [DashboardController::class, 'logistics']) ->name('logistics');
