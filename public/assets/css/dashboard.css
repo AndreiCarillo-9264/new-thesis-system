@@ -346,6 +346,63 @@ body {
   border-bottom: none;
 }
 
+/* Sales Dashboard Specific */
+.stats-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.stats-card h5 {
+  color: var(--color-text-muted);
+}
+
+.stats-card h2 {
+  color: var(--color-primary);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-outline-primary {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+.card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.table th {
+  background: #f8f9fa;
+  color: var(--color-text-light);
+}
+
 /* ───── Responsive ───── */
 @media (min-width: 1200px) {
   .stats-card {

@@ -1,5 +1,5 @@
 <?php
-
+// Updated: app/Http/Controllers/JobOrderController.php
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
@@ -24,17 +24,24 @@ class JobOrderController extends Controller
     public function create()
     {
         $products = Product::where('is_active', true)->get();
-        return view('job_orders.create', compact('products'));
+        $users = User::all(); // Adjust if roles exist
+        return view('job_orders.create', compact('products', 'users'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'jo_number'         => 'required|unique:job_orders,jo_number',
+            'customer_name'     => 'required|string|max:255',
             'product_id'        => 'required|exists:products,id',
             'ordered_quantity'  => 'required|integer|min:1',
+            'unit_price'        => 'required|numeric|min:0',
             'jo_date'           => 'required|date',
+            'due_date'          => 'required|date|after_or_equal:jo_date',
             'status'            => 'sometimes|in:open,in_progress,completed,cancelled',
+            'user_id'           => 'required|exists:users,id',
+            'priority'          => 'required|in:high,medium,low',
+            'notes'             => 'nullable|string',
         ]);
 
         $jobOrder = JobOrder::create(array_merge($validated, [
@@ -55,21 +62,28 @@ class JobOrderController extends Controller
     public function edit(JobOrder $jobOrder)
     {
         $products = Product::where('is_active', true)->get();
-        return view('job_orders.edit', compact('jobOrder', 'products'));
+        $users = User::all();
+        return view('job_orders.edit', compact('jobOrder', 'products', 'users'));
     }
 
     public function update(Request $request, JobOrder $jobOrder)
     {
         $validated = $request->validate([
+            'customer_name'     => 'required|string|max:255',
             'product_id'        => 'required|exists:products,id',
             'ordered_quantity'  => 'required|integer|min:1',
+            'unit_price'        => 'required|numeric|min:0',
             'jo_date'           => 'required|date',
+            'due_date'          => 'required|date|after_or_equal:jo_date',
             'status'            => 'required|in:open,in_progress,completed,cancelled',
+            'user_id'           => 'required|exists:users,id',
+            'priority'          => 'required|in:high,medium,low',
+            'notes'             => 'nullable|string',
         ]);
 
         $jobOrder->update($validated);
 
-        // Optional: check if already overproduced (warning only)
+        
         if ($jobOrder->finishedGoods()->sum('quantity_produced') > $jobOrder->ordered_quantity) {
             session()->flash('warning', 'Warning: Produced quantity already exceeds ordered quantity.');
         }
@@ -87,7 +101,7 @@ class JobOrderController extends Controller
 
     public function destroy(JobOrder $jobOrder)
     {
-        // Optional: prevent delete if has finished goods / distributions
+
         if ($jobOrder->finishedGoods()->exists() || $jobOrder->distributions()->exists()) {
             return back()->with('error', 'Cannot delete Job Order with associated records.');
         }

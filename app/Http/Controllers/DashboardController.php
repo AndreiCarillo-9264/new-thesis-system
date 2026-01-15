@@ -1,5 +1,5 @@
 <?php
-
+// Updated: app/Http/Controllers/DashboardController.php (only sales() method updated, others unchanged)
 namespace App\Http\Controllers;
 
 use App\Models\ActualInventory;
@@ -7,9 +7,12 @@ use App\Models\Distribution;
 use App\Models\FinishedGood;
 use App\Models\InventoryTransfer;
 use App\Models\JobOrder;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 
 class DashboardController extends Controller
 {
@@ -55,21 +58,27 @@ class DashboardController extends Controller
      */
     public function sales()
     {
-        $totalJobOrders     = JobOrder::count();
-        $openJobOrders      = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
-        $deliveredThisMonth = Distribution::whereMonth('distribution_date', now()->month)
-            ->whereYear('distribution_date', now()->year)
-            ->sum('quantity_distributed');
-        $pendingDeliveries  = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
+        $revenue = JobOrder::sum(\DB::raw('ordered_quantity * unit_price'));
+        $pendingOrders = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
+        $completedOrders = JobOrder::where('status', 'completed')->count();
 
-        $jobOrders = JobOrder::with('product')->latest()->paginate(15);
+        $completedJobs = JobOrder::where('status', 'completed')->with('distributions')->get();
+        $onTimeCount = $completedJobs->filter(function ($jo) {
+            $lastDelivery = $jo->distributions->max('distribution_date');
+            return $lastDelivery && Carbon::parse($lastDelivery) <= $jo->due_date;
+        })->count();
+        $onTimePercentage = $completedJobs->count() > 0 ? round(($onTimeCount / $completedJobs->count()) * 100) : 0;
+
+        $products = Product::where('is_active', true)->get();
+        $users = User::all();
 
         return view('dashboards.sales', compact(
-            'totalJobOrders',
-            'openJobOrders',
-            'deliveredThisMonth',
-            'pendingDeliveries',
-            'jobOrders'
+            'revenue',
+            'pendingOrders',
+            'completedOrders',
+            'onTimePercentage',
+            'products',
+            'users'
         ));
     }
 

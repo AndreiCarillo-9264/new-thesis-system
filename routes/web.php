@@ -10,6 +10,7 @@ use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\ActualInventoryController;
 use App\Http\Controllers\InventoryTransferController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SalesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,4 +120,11 @@ Route::middleware('auth')->group(function () {
     // =============================================================
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+   
+    Route::prefix('sales')->group(function () {
+        Route::get('/orders', [SalesController::class, 'index']);
+        Route::post('/orders', [SalesController::class, 'store']);
+        Route::get('/orders/search', [SalesController::class, 'search']);
+        Route::post('/reports/generate', [SalesController::class, 'generateReport']);
+    });
 });
