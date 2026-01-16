@@ -12,6 +12,7 @@ use App\Http\Controllers\InventoryTransferController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\InventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,5 +135,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/finished-goods', [ProductionController::class, 'getFinishedGoods']);
         Route::post('/finished-goods', [ProductionController::class, 'recordFinishedGoods']);
         Route::get('/search', [ProductionController::class, 'search']);
+    });
+    Route::prefix('inventory')->group(function () {
+        Route::get('/current-levels', [InventoryController::class, 'getCurrentLevels']);
+        Route::post('/adjust', [InventoryController::class, 'adjustStock']);
+        Route::get('/transfers', [InventoryController::class, 'getRecentTransfers']);
+        Route::post('/transfer', [InventoryController::class, 'recordTransfer']);
+        Route::get('/search', [InventoryController::class, 'search']);
     });
 });

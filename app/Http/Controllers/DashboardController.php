@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActualInventory;
 use App\Models\Distribution;
 use App\Models\FinishedGood;
+use App\Models\InventoryAudit;
 use App\Models\InventoryTransfer;
 use App\Models\JobOrder;
 use App\Models\Product;
@@ -147,13 +148,17 @@ class DashboardController extends Controller
      */
     public function inventory()
     {
-        $stockOnHand   = ActualInventory::sum('actual_quantity');
-        $lowStockCount = ActualInventory::where('actual_quantity', '<', 50)->count();
-        $stockInToday  = FinishedGood::whereDate('production_date', today())->sum('quantity_produced');
-        $stockOutToday = Distribution::whereDate('distribution_date', today())->sum('quantity_distributed');
+        $stockOnHand = ActualInventory::sum('actual_quantity');
+        $lowStockCount = ActualInventory::whereColumn('actual_quantity', '<', 'min_stock')->count();
+        $stockInToday = InventoryAudit::where('adjustment_type', 'add')
+            ->whereDate('created_at', today())
+            ->sum('quantity');
+        $stockOutToday = InventoryAudit::where('adjustment_type', 'remove')
+            ->whereDate('created_at', today())
+            ->sum('quantity');
 
         $inventories = ActualInventory::with('product')->get();
-        $transfers   = InventoryTransfer::with('product')->latest()->limit(10)->get();
+        $transfers = InventoryTransfer::with('product')->latest()->limit(10)->get();
 
         return view('dashboards.inventory', compact(
             'stockOnHand',
