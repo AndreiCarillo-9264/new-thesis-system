@@ -1,5 +1,5 @@
 <?php
-// Updated: app/Models/JobOrder.php
+// Updated: app/Models/JobOrder.php (add assigned_team to fillable)
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +11,7 @@ class JobOrder extends Model
 
     protected $fillable = [
         'jo_number', 'customer_name', 'product_id', 'ordered_quantity', 'unit_price',
-        'jo_date', 'due_date', 'status', 'user_id', 'priority', 'notes'
+        'jo_date', 'due_date', 'status', 'user_id', 'priority', 'notes', 'assigned_team'
     ];
 
     protected $appends = ['total_produced', 'production_status', 'total_amount'];
@@ -36,7 +36,6 @@ class JobOrder extends Model
         return $this->hasMany(Distribution::class);
     }
 
-    
     public function getTotalProducedAttribute()
     {
         return $this->finishedGoods->sum('quantity_produced');

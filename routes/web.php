@@ -11,6 +11,7 @@ use App\Http\Controllers\ActualInventoryController;
 use App\Http\Controllers\InventoryTransferController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\ProductionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,5 +127,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/orders', [SalesController::class, 'store']);
         Route::get('/orders/search', [SalesController::class, 'search']);
         Route::post('/reports/generate', [SalesController::class, 'generateReport']);
+    });
+    Route::prefix('production')->group(function () {
+        Route::get('/job-orders', [ProductionController::class, 'getPendingOrders']);
+        Route::post('/job-orders', [ProductionController::class, 'createJobOrder']);
+        Route::get('/finished-goods', [ProductionController::class, 'getFinishedGoods']);
+        Route::post('/finished-goods', [ProductionController::class, 'recordFinishedGoods']);
+        Route::get('/search', [ProductionController::class, 'search']);
     });
 });

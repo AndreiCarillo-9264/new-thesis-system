@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-
 class DashboardController extends Controller
 {
     /**
@@ -124,26 +123,25 @@ class DashboardController extends Controller
      */
     public function production()
     {
-        $pendingProduction = JobOrder::whereIn('status', ['open', 'in_progress'])->sum('ordered_quantity');
-        $producedToday     = FinishedGood::whereDate('production_date', today())->sum('quantity_produced');
+        $pendingProduction = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
+        $producedToday = FinishedGood::whereDate('production_date', today())->sum('quantity_produced');
+        $completionJobs = JobOrder::where('status', 'completed')->get();
+        $completionPercentage = $completionJobs->count() > 0 ? round(($completionJobs->filter(function ($jo) {
+            return $jo->finishedGoods->sum('quantity_produced') >= $jo->ordered_quantity;
+        })->count() / $completionJobs->count()) * 100) : 0;
+        $backlog = JobOrder::whereIn('status', ['open', 'in_progress'])->sum(\DB::raw('ordered_quantity - (SELECT COALESCE(SUM(quantity_produced), 0) FROM finished_goods WHERE finished_goods.job_order_id = job_orders.id)'));
 
-        $completed = JobOrder::where('status', 'completed')->count();
-        $total     = JobOrder::count();
-        $completionPercentage = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
-
-        $backlog = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
-
-        $finishedGoods = FinishedGood::with(['jobOrder', 'product'])->latest()->paginate(15);
+        $products = Product::where('is_active', true)->get();
 
         return view('dashboards.production', compact(
             'pendingProduction',
             'producedToday',
             'completionPercentage',
             'backlog',
-            'finishedGoods'
+            'products'
         ));
     }
-
+    
     /**
      * Inventory Dashboard
      */
