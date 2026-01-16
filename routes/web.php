@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\LogisticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -142,5 +143,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/transfers', [InventoryController::class, 'getRecentTransfers']);
         Route::post('/transfer', [InventoryController::class, 'recordTransfer']);
         Route::get('/search', [InventoryController::class, 'search']);
+    });
+    Route::prefix('logistics')->group(function () {
+        Route::get('/distributions', [LogisticsController::class, 'getDistributions']);
+        Route::post('/distributions', [LogisticsController::class, 'recordDistribution']);
+        Route::get('/transfers', [LogisticsController::class, 'getTransfers']);
+        Route::post('/transfers', [LogisticsController::class, 'recordTransfer']);
+        Route::get('/search', [LogisticsController::class, 'search']);
+        Route::get('/job-orders', [LogisticsController::class, 'getCompletedJobOrders']);
     });
 });

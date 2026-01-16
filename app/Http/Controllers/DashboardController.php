@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\ActualInventory;
 use App\Models\Distribution;
 use App\Models\FinishedGood;
-use App\Models\InventoryAudit;
 use App\Models\InventoryTransfer;
+use App\Models\InventoryAudit;
 use App\Models\JobOrder;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+
 
 class DashboardController extends Controller
 {
@@ -175,17 +176,21 @@ class DashboardController extends Controller
      */
     public function logistics()
     {
-        $deliveriesToday  = Distribution::whereDate('distribution_date', today())->count();
-        $pendingDispatch  = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
-        $transfersToday   = InventoryTransfer::whereDate('transfer_date', today())->count();
+        $deliveriesToday = Distribution::whereDate('distribution_date', today())->count();
+        $pendingDispatch = JobOrder::whereIn('status', ['open', 'in_progress'])->count();
+        $transfersToday = InventoryTransfer::whereDate('transfer_date', today())->count();
+        $delayedShipments = Distribution::where('status', '!=', 'delivered')
+            ->where('distribution_date', '<', now()->subDays(2)) // Assume delayed if >2 days old
+            ->count();
 
-        $distributions = Distribution::with(['jobOrder.product'])->latest()->paginate(15);
-        $transfers     = InventoryTransfer::with('product')->latest()->paginate(15);
+        $distributions = Distribution::with(['jobOrder.product'])->latest()->limit(10)->get();
+        $transfers = InventoryTransfer::with('product')->latest()->limit(10)->get();
 
         return view('dashboards.logistics', compact(
             'deliveriesToday',
             'pendingDispatch',
             'transfersToday',
+            'delayedShipments',
             'distributions',
             'transfers'
         ));
